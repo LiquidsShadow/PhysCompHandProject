@@ -10,6 +10,7 @@ Servo servoLR; // left right
 Servo servoOC; // open close
 
 const int SERVO_OC_PORT = 9;
+const int SERVO_FB_PORT = 10;
 
 void nunChuckLoop()
 {
@@ -84,6 +85,7 @@ void setup() {
     //lcd.begin(16, 2);
     //servoOC.attach(9);
     servoOC.attach(SERVO_OC_PORT);
+    servoFB.attach(SERVO_FB_PORT);
     setUpBtnAndLED();
     // nunchuk_init_power(); // A1 and A2 is power supply
     nunchuk_init();
@@ -91,8 +93,15 @@ void setup() {
     Serial.print("Set-up complete...\n");
 }
 void loop() {
-  nunChuckLoop();
+  //nunChuckLoop();
+  servoFB.writeMicroseconds(2300); // fully clockwise
+//  delay(500);
+//  servoFB.writeMicroseconds(1000); // fully counter clockwise
+//  delay(500);
+//  servoFB.writeMicroseconds(1500); // to midpoint
+//  delay(500);
 //  if (nunchuk_read()) 
 //    nunchuk_print();
 //  delay(10);
+  
 }
