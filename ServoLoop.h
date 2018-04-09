@@ -1,6 +1,9 @@
 #include <Pixy.h>
 #include <SPI.h>
 
+#ifndef ServoLoop_H
+#define ServoLoop_H
+
 Pixy pixy;
 // parameters are gain values for proportional & derivative control 
 ServoLoop panLoop(300, 500); 
@@ -87,4 +90,6 @@ void pantiltLoop() {
     }
   }
 }
+
+#endif 
 

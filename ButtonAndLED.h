@@ -1,3 +1,6 @@
+#ifndef ButtonAndLED_H
+#define ButtonAndLED_H
+
 String colors[] = {"blue","green","red","exit"};
 String color = "red";
 
@@ -91,3 +94,5 @@ void buttonClrCycle() {
     }
   }
 }
+
+#endif

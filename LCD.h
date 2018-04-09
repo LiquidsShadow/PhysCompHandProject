@@ -1,5 +1,8 @@
 #include <LiquidCrystal.h>
 
+#ifndef LCD_H
+#define LCD_H
+
 // ports for lcd 
 const int REGISTER_SELECT = 7;
 const int ENABLE = 8;
@@ -123,4 +126,4 @@ void runSelectionMode() {
   Serial.print("Completed Selection Mode..\n");
 }
 
-
+#endif
