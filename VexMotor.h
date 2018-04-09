@@ -1,5 +1,5 @@
 #ifndef VexMotor_H
-#define VexMotor_h
+#define VexMotor_H
 
 class VexMotor {
   int pin;
