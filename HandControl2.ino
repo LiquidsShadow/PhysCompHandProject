@@ -2,15 +2,15 @@
 
 #include "ButtonAndLED.h"
 #include "Nunchuck.h"
+#include "VexMotor.h"
 
 // *NOTE* these are servos for the device being operated by the nunchuck (i.e. the hand)
 // servos for the Pixy are controlled in ServoLoop using setServos() function Pixy class
-Servo servoFB; // forward backward
-Servo servoLR; // left right
 Servo servoOC; // open close
 
 const int SERVO_OC_PORT = 9;
-const int SERVO_FB_PORT = 10;
+const int VEX_FB_PORT = 10;
+VexMotor forwardBackward(VEX_FB_PORT);
 
 void nunChuckLoop()
 {
@@ -29,30 +29,6 @@ void nunChuckLoop()
   // un-comment next line to print data to serial monitor  
    //nunchuk_print();          
    }
-}
-
-// gradual servo movement -> think this would prevent "drift"
-void moveByStepTo(Servo servo, int destination) {
-  int curr = servo.read(); 
-  while (curr < destination || curr > destination) {
-    if (curr > destination)
-      if (curr < destination + 10)
-        curr -= 1;
-      else
-        curr -= 2;
-    else 
-      if (curr > destination - 10)
-        curr += 1;
-      else
-        curr += 2;
-    servo.write(curr);
-    delay(10);
-    
-    Serial.print(curr);
-    Serial.print("->");
-    Serial.print(destination);
-    Serial.print("\n");
-  }
 }
 
 /*
@@ -79,27 +55,21 @@ void runAutonomous() { // use global variable "color" & use pantilt demo
 
 void setup() {
     //pixy.init();
+    Serial.print("Initiated set-up...\n");
     Serial.begin(9600);
-    Serial.print("TEST");
     Wire.begin();
-    //lcd.begin(16, 2);
-    //servoOC.attach(9);
     servoOC.attach(SERVO_OC_PORT);
-    servoFB.attach(SERVO_FB_PORT);
     setUpBtnAndLED();
-    // nunchuk_init_power(); // A1 and A2 is power supply
     nunchuk_init();
-    nunchuk_read();// get rid of c being pushed
-    Serial.print("Set-up complete...\n");
+    nunchuk_read();// get rid of c being pushed at start
+    Serial.print("\nSet-up complete...\n");
 }
 void loop() {
+   forwardBackward.moveTo(0);
+   delay(3000);
+   forwardBackward.moveTo(180);
+   delay(3000);
   //nunChuckLoop();
-  servoFB.writeMicroseconds(2300); // fully clockwise
-//  delay(500);
-//  servoFB.writeMicroseconds(1000); // fully counter clockwise
-//  delay(500);
-//  servoFB.writeMicroseconds(1500); // to midpoint
-//  delay(500);
 //  if (nunchuk_read()) 
 //    nunchuk_print();
 //  delay(10);
