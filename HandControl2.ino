@@ -2,15 +2,51 @@
 
 #include "ButtonAndLED.h"
 #include "Nunchuck.h"
-#include "VexMotor.h"
 
 // *NOTE* these are servos for the device being operated by the nunchuck (i.e. the hand)
 // servos for the Pixy are controlled in ServoLoop using setServos() function Pixy class
-Servo servoOC; // open close
+Servo fingersServo;
+Servo thumbServo;
 
-const int SERVO_OC_PORT = 9;
-const int VEX_FB_PORT = 10;
-VexMotor forwardBackward(VEX_FB_PORT);
+const short FINGERS_SERVO_PORT = 9;
+const short THUMB_SERVO_PORT = 10;
+
+int calcOutput(int curr, int dest) {
+  if (curr > dest) {
+    if (curr < dest + 10)
+      return curr - 1;
+    return curr - 2;
+  }
+  else {
+    if (curr > dest - 10) 
+      return curr + 1;
+    return curr + 2;
+  }
+}
+
+// gradual servo movement -> think this would prevent "drift"
+void moveHand(long destFingers, long destThumb, int delayTime = 10) {
+  int fingersPos = fingersServo.read(); 
+  int thumbPos = thumbServo.read();
+  while ((fingersPos < destFingers || fingersPos > destFingers) || (thumbPos < destThumb || thumbPos > destThumb)) {
+    fingersPos = calcOutput(fingersPos, destFingers);
+    thumbPos = calcOutput(thumbPos, destThumb);
+    fingersServo.write(fingersPos);
+    thumbServo.write(thumbPos);
+    delay(delayTime);
+
+    Serial.print("--- Fingers ---");
+    Serial.print(fingersPos);
+    Serial.print("->");
+    Serial.print(destFingers);
+    Serial.print("\n");
+    Serial.print("--- Thumb ---");
+    Serial.print(thumbPos);
+    Serial.print("->");
+    Serial.print(destThumb);
+    Serial.print("\n\n");
+  } 
+}
 
 void nunChuckLoop()
 {
@@ -36,8 +72,7 @@ void nunChuckLoop()
  */
 void openHand() {
   Serial.print("Opening hand..");
-  moveByStepTo(servoOC, 180);
-  
+  moveHand(180, 90);
 }
 
 /*
@@ -45,7 +80,7 @@ void openHand() {
  */
 void grab() {
   Serial.print("Closing hand..");
-  moveByStepTo(servoOC, 0);
+  moveHand(0, 0);
 }
 
 void runAutonomous() { // use global variable "color" & use pantilt demo 
@@ -58,18 +93,15 @@ void setup() {
     Serial.print("Initiated set-up...\n");
     Serial.begin(9600);
     Wire.begin();
-    servoOC.attach(SERVO_OC_PORT);
+    fingersServo.attach(FINGERS_SERVO_PORT);
+    thumbServo.attach(THUMB_SERVO_PORT);
     setUpBtnAndLED();
     nunchuk_init();
     nunchuk_read();// get rid of c being pushed at start
     Serial.print("\nSet-up complete...\n");
 }
 void loop() {
-   forwardBackward.moveTo(0);
-   delay(3000);
-   forwardBackward.moveTo(180);
-   delay(3000);
-  //nunChuckLoop();
+  nunChuckLoop();
 //  if (nunchuk_read()) 
 //    nunchuk_print();
 //  delay(10);
