@@ -8,16 +8,16 @@ const short FINGERS_SERVO_PORT = 9;
 const short THUMB_SERVO_PORT = 10;
 
 // helper method to determine step used by moveHand() and functions like it if need be 
-int calcStep(int curr, int dest) {
+int calcStep(int curr, int dest, int buf = 10, int smallStep = 1, int largeStep = 2) {
   if (curr > dest) {
-    if (curr < dest + 10)
-      return curr - 1;
-    return curr - 2;
+    if (curr < dest + buf)
+      return curr - smallStep;
+    return curr - largeStep;
   }
   else {
-    if (curr > dest - 10) 
-      return curr + 1;
-    return curr + 2;
+    if (curr > dest - buf) 
+      return curr + smallStep;
+    return curr + largeStep;
   }
 }
 
@@ -33,16 +33,14 @@ void moveHand(long destFingers, long destThumb, int delayTime = 10) {
     delay(delayTime);
 
     // Servo debug stuff 
-    Serial.print("--- Fingers ---");
+    Serial.println("\n--- Fingers ---");
     Serial.print(fingersPos);
     Serial.print("->");
     Serial.print(destFingers);
-    Serial.print("\n");
-    Serial.print("--- Thumb ---");
+    Serial.println("\n--- Thumb ---");
     Serial.print(thumbPos);
     Serial.print("->");
-    Serial.print(destThumb);
-    Serial.print("\n\n");
+    Serial.println(destThumb);
   } 
 }
 
@@ -56,11 +54,11 @@ void nunChuckLoop()
   
     if (nunchuk_buttonC()) {
       Serial.print("Opening hand..");
-      moveHand(180, 90);
+      moveHand(180, 90, 20);
     }
     else if (nunchuk_buttonZ()) {
       Serial.print("Closing hand..");
-      moveHand(0, 0);
+      moveHand(0, 0, 20);
     }
   // un-comment next line to print data to serial monitor  
    //nunchuk_print();          
@@ -68,14 +66,14 @@ void nunChuckLoop()
 }
 
 void setup() {
-    Serial.print("Initiated set-up...\n");
+    Serial.println("Initiated set-up...\n");
     Serial.begin(9600);
     Wire.begin();
     fingersServo.attach(FINGERS_SERVO_PORT);
     thumbServo.attach(THUMB_SERVO_PORT);
     nunchuk_init();
     nunchuk_read();// get rid of c being pushed at start
-    Serial.print("\nSet-up complete...\n");
+    Serial.println("\nSet-up complete...\n");
 }
 void loop() {
   nunChuckLoop();
